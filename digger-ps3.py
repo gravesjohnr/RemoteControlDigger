@@ -38,17 +38,24 @@ os.environ["SDL_VIDEODRIVER"] = "dummy"
 
 # Initialise the pygame library
 pygame.init()
-pygame.mixer.init()
+try:
+  pygame.mixer.init()
+except pygame.error:
+  print "Not able to deal with audio.  skipping"
+  pass
+
 pygame.display.set_mode((600, 400)) # Set dummy display
 
 #pygame.mixer.init()
 print("Pygame init done.")
 
 joystickAvailable=False
+print "Number of controllers found: %d" % pygame.joystick.get_count()
 while pygame.joystick.get_count() == 0:
   print("ps3 controller not connected.")
   time.sleep(5)
   exit()
+
 
 # Connect to the first JoyStick
 j = pygame.joystick.Joystick(0)
@@ -179,6 +186,8 @@ while True:
         else:
           pygame.mixer.Channel(0).play(pygame.mixer.Sound('/home/pi/RemoteControlDigger/EngineStart.wav'))
           pygame.mixer.Channel(0).set_volume(engineVolume*.1)
+          time.sleep(1)     # wait a second
+          pygame.mixer.Channel(0).play(pygame.mixer.Sound('/home/pi/RemoteControlDigger/EngineRun.wav'),-1)
           engineStarted = True
       if event.button == 0: # Select Button Play music from the songs directory
         musicPlaying = musicPlaying+1
